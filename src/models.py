@@ -33,8 +33,8 @@ class Personaje(db.Model):
         return {
             "id": self.id,
             "name": self.name,
-            "eye_color": self.eye,
-            "hair_color": self.hair,
+            "eye_color": self.eye_color,
+            "hair_color": self.hair_color,
             # do not serialize the password, its a security breach
         }
     
@@ -71,7 +71,7 @@ class Vehicle(db.Model):
             "id": self.id,
             "name": self.name,
             "crew": self.crew,
-            "vehicle_class": self.vehicleclass,
+            "vehicle_class": self.vehicle_class,
             # do not serialize the password, its a security breach
         }
 
@@ -90,8 +90,8 @@ def __repr__(self):
 def serialize(self):
         return {
             "id": self.id,
-            "usuario_id": self.usuarioid,
-            "personaje_id": self.personajeid,
+            "usuario_id": self.usuario_id,
+            "personaje_id": self.personaje_id,
         }
 
 
@@ -121,7 +121,7 @@ class Planeta_favorito(db.Model):
     planeta = db.relationship(Planeta)
     
 def __repr__(self):
-        return '<Vehicle_favorito %r>' % self.id
+        return '<Planeta_favorito %r>' % self.id
 
 def serialize(self):
         return {
