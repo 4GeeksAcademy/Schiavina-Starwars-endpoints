@@ -84,14 +84,15 @@ class Personaje_favorito(db.Model):
     usuario = db.relationship(Usuario)
     personaje = db.relationship(Personaje)
 
-def __repr__(self):
+    def __repr__(self):
         return '<Personaje_favorito %r>' % self.id
 
-def serialize(self):
+    def serialize(self):
+        resultado = Personaje.query.filter_by(id=self.personaje_id).first()
         return {
             "id": self.id,
             "usuario_id": self.usuario_id,
-            "personaje_id": self.personaje_id,
+            "personaje_info": resultado.serialize(),
         }
 
 
@@ -102,14 +103,15 @@ class Vehicle_favorito(db.Model):
     usuario = db.relationship(Usuario)
     vehicle = db.relationship(Vehicle)
 
-def __repr__(self):
+    def __repr__(self):
         return '<Vehicle_favorito %r>' % self.id
 
-def serialize(self):
+    def serialize(self):
+        resultados = Vehicle.query.filter_by(id=self.vehicle_id).first()
         return {
             "id": self.id,
-            "usuario_id": self.usuarioid,
-            "vehicle_id": self.vehicleid,
+            "usuario_id": self.usuario_id,
+            "vehicle_info": resultados.serialize()
         }
 
 
@@ -120,14 +122,15 @@ class Planeta_favorito(db.Model):
     usuario = db.relationship(Usuario)
     planeta = db.relationship(Planeta)
     
-def __repr__(self):
+    def __repr__(self):
         return '<Planeta_favorito %r>' % self.id
 
-def serialize(self):
+    def serialize(self):
+        resultado = Planeta.query.filter_by(id=self.planeta_id).first()
         return {
             "id": self.id,
-            "usuario_id": self.usuarioid,
-            "planeta_id": self.planetaid,
+            "usuario_id": self.usuario_id,
+            "planeta_info": resultado.serialize(),
         }
 
     
