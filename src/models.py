@@ -15,7 +15,7 @@ class Usuario(db.Model):
         return {
             "id": self.id,
             "name": self.name,
-            "email": self.email, 
+            "email": self.email,
             # do not serialize the password, its a security breach
         }
 

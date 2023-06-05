@@ -6,6 +6,7 @@ from flask import Flask, request, jsonify, url_for
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, JWTManager
 from utils import APIException, generate_sitemap
 from admin import setup_admin
 from models import db, Usuario, Personaje, Planeta, Vehicle, Personaje_favorito, Planeta_favorito, Vehicle_favorito
@@ -25,6 +26,12 @@ MIGRATE = Migrate(app, db)
 db.init_app(app)
 CORS(app)
 setup_admin(app)
+
+# Setup the Flask-JWT-Extended extension
+app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this!
+jwt = JWTManager(app)
+
+
 
 # Handle/serialize errors like a JSON object
 @app.errorhandler(APIException)
@@ -194,7 +201,6 @@ def get_personajefav(id):
 
 
 
-
     # PLANETA FAVORITO
 
 @app.route('/planeta_favorito', methods=['GET'])
@@ -249,6 +255,28 @@ def get_vehiclefav(id):
     }
 
     return jsonify(response_body), 200
+
+
+
+                        # ENDPOINT DE LOGIN
+@app.route("/login", methods=["POST"])
+def login():
+    email = request.json.get("email", None)
+    password = request.json.get("password", None)
+
+    usuario = Usuario.query.filter_by(email=email).first()
+    print(usuario.email)
+    if usuario is None:
+         return jsonify("USUARIO NO ENCONTRADO"), 404
+
+    # if email != usuario.email or password != usuario.password:
+    #     return jsonify({"msg": "Bad email or password"}), 401
+
+    access_token = create_access_token(identity=email)
+    return jsonify(access_token=access_token)
+
+
+
    
 
 # this only runs if `$ python src/app.py` is executed
