@@ -84,6 +84,26 @@ def get_user(id):
 #     return jsonify(response_body), 200
 
 
+@app.route('/user/<int:id>', methods=['DELETE'])
+def delete_user(id):
+    print(id)
+
+    user = Usuario.query.filter_by(id=id).first()
+    if user is None:
+        raise APIException("No hay un usuario con ese ID", status_code=404)
+
+    db.session.delete(user)
+    db.session.commit()
+
+    response_body = {
+        "msg": "El usuario ha sido borrado",
+    }
+
+    return jsonify(response_body), 200
+
+
+
+
 
 
 
@@ -176,6 +196,7 @@ def get_vehicle(id):
     # PERSONAJE FAVORITO
 
 @app.route('/personaje_favorito', methods=['GET'])
+@jwt_required()
 def personajefav_get():
     results = Personaje_favorito.query.all()
     personaje_favorito_list = list(map(lambda item: item.serialize(),results))
@@ -204,6 +225,7 @@ def get_personajefav(id):
     # PLANETA FAVORITO
 
 @app.route('/planeta_favorito', methods=['GET'])
+@jwt_required()
 def planetafav_get():
     results = Planeta_favorito.query.all()
     planeta_favorito_list = list(map(lambda item: item.serialize(),results))
@@ -234,6 +256,7 @@ def get_planetafav(id):
     # VEHICLE FAVORITO
 
 @app.route('/vehicle_favorito', methods=['GET'])
+@jwt_required()
 def vehiclefav_get():
     results = Vehicle_favorito.query.all()
     vehicle_favorito_list = list(map(lambda item: item.serialize(),results))
@@ -264,14 +287,12 @@ def login():
     email = request.json.get("email", None)
     password = request.json.get("password", None)
 
-    usuario = Usuario.query.filter_by(email=email).first()
-    print(usuario.email)
-    if usuario is None:
-         return jsonify("USUARIO NO ENCONTRADO"), 404
-
-    # if email != usuario.email or password != usuario.password:
-    #     return jsonify({"msg": "Bad email or password"}), 401
-
+    user = Usuario.query.filter_by(email=email).first()
+    # print(user.email)
+    if user is None: 
+        return jsonify({"msg": "No existe"}), 404
+    if email != user.email or password != user.password:
+        return jsonify({"msg": "bad email or password"}), 401
     access_token = create_access_token(identity=email)
     return jsonify(access_token=access_token)
 
