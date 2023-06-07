@@ -1,6 +1,7 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
+import json
 import os
 from flask import Flask, request, jsonify, url_for
 from flask_migrate import Migrate
@@ -43,7 +44,9 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
-                                # USUARIO
+#############################################################
+#########################USUARIO#############################
+#############################################################
 
 @app.route('/usuario', methods=['GET'])
 def usuario_get():
@@ -58,9 +61,9 @@ def usuario_get():
 
 @app.route('/usuario/<int:id>', methods=['GET'])
 def get_user(id):
-    # Usuario = Usuario.query.all()
     user = Usuario.query.filter_by(id=id).first()
-    # users_list = list(map(lambda item: item.serialize(),user))
+    if user is None:
+        raise APIException("No hay un usuario con ese ID", status_code=404)
     response_body = {
         "msg": "Hello, this is your GET /user response ",
         "result": user.serialize()
@@ -68,20 +71,26 @@ def get_user(id):
 
     return jsonify(response_body), 200
 
-@app.route('/user', methods=['POST'])
-# def create_user():
-#     body = json.loads(request.data)
-#     # json.loads(request.body.decode(encoding='UTF-8'))
-#     print(body)
-#     user = User(email=body["email"], password=body["password"], is_active=body["is_active"])
-#     db.session.add(user)
-#     db.session.commit()
+@app.route('/usuario', methods=['POST'])
+def create_user():
+    body = json.loads(request.data)
+    user = Usuario(email=body["email"], password=body["password"], name=body["name"])
+    db.session.add(user)
+    db.session.commit()
+    if body is None:
+        raise APIException("You need to specify the request body as a json object", status_code=400)
+    if 'email' not in body:
+        raise APIException('Te falta añadir un correo electrónico', status_code=400)
+    if 'password' not in body:
+        raise APIException('Te falta añadir una contraseña', status_code=400)
+      if 'name' not in body:
+        raise APIException('Te falta añadir una nombre', status_code=400)
 
-#     response_body = {
-#         "msg": "El usuario ha sido creado",
-#     }
+    response_body = {
+        "msg": "El usuario ha sido creado",
+    }
 
-#     return jsonify(response_body), 200
+    return jsonify(response_body), 200
 
 
 @app.route('/user/<int:id>', methods=['DELETE'])
@@ -104,10 +113,9 @@ def delete_user(id):
 
 
 
-
-
-
-                                 # PERSONAJE
+#############################################################
+#########################PERSONAJE#############################
+#############################################################
 
 @app.route('/personaje', methods=['GET'])
 def personaje_get():
@@ -124,8 +132,9 @@ def personaje_get():
 @app.route('/personaje/<int:id>', methods=['GET'])
 def get_personaje(id):
     personaje = Personaje.query.filter_by(id=id).first()
-    # results = Personaje.query.all()
-    # personaje_list = list(map(lambda item: item.serialize(),results))
+
+    if personaje is None:
+        raise APIException("No hay un personaje con ese ID", status_code=404)
     response_body = {
         "msg": "Hello, this is your GET /user response ",
         "result": personaje.serialize()
@@ -134,8 +143,21 @@ def get_personaje(id):
     return jsonify(response_body), 200
 
 
+@app.route('/personaje', methods=['POST'])
+def create_personaje():
+    body = json.loads(request.data)
+    personaje = Personaje(eye_color=body["eye_color"], hair_color=body["hair_color"], name=body["name"])
+    db.session.add(personaje)
+    db.session.commit()
+    response_body = {
+        "msg": "El Personaje ha sido creado",
+    }
 
-                                        # PLANETA
+    return jsonify(response_body), 200
+
+#############################################################
+#########################PLANETA#############################
+#############################################################
 
 @app.route('/planeta', methods=['GET'])
 def handle_planeta():
@@ -152,8 +174,9 @@ def handle_planeta():
 @app.route('/planeta/<int:id>', methods=['GET'])
 def get_planeta(id):
     planeta = Planeta.query.filter_by(id=id).first()
-    # results = Planeta.query.all()
-    # planeta_list = list(map(lambda item: item.serialize(),results))
+    if planeta is None:
+        raise APIException("No hay un planeta con ese ID", status_code=404)
+ 
 
     response_body = {
         "msg": "Hello, this is your GET /user response ",
@@ -164,7 +187,23 @@ def get_planeta(id):
 
 
 
-                                    # VEHICLE    
+@app.route('/planeta', methods=['POST'])
+def create_planeta():
+    body = json.loads(request.data)
+    planeta = Planeta(name=body["name"], population=body["population"], terrain=body["terrain"])
+    db.session.add(planeta)
+    db.session.commit()
+    response_body = {
+        "msg": "El Planeta ha sido creado",
+    }
+
+    return jsonify(response_body), 200
+
+
+
+#############################################################
+#########################VEHICLE#############################
+############################################################# 
 
 @app.route('/vehicle', methods=['GET'])
 def vehicle_get():
@@ -179,9 +218,8 @@ def vehicle_get():
 @app.route('/vehicle/<int:id>', methods=['GET'])
 def get_vehicle(id):
     vehicle = Vehicle.query.filter_by(id=id).first()
-    results = Vehicle.query.all()
-    vehicle_list = list(map(lambda item: item.serialize(),results))
-
+    if vehicle is None:
+        raise APIException("No hay un vehiculo con ese ID", status_code=404)
 
     response_body = {
         "msg": "Hello, this is your GET /user response ",
@@ -191,12 +229,26 @@ def get_vehicle(id):
     return jsonify(response_body), 200
 
 
+@app.route('/vehicle', methods=['POST'])
+def create_vehicle():
+    body = json.loads(request.data)
+    vehicle = Vehicle(crew=body["crew"], name=body["name"], vehicle_class=body["vehicle_class"])
+    db.session.add(vehicle)
+    db.session.commit()
+    response_body = {
+        "msg": "El Vehiculo ha sido creado",
+    }
+
+    return jsonify(response_body), 200
 
 
-    # PERSONAJE FAVORITO
+
+#############################################################
+#########################PERSONAJE FAVORITO#############################
+#############################################################
 
 @app.route('/personaje_favorito', methods=['GET'])
-@jwt_required()
+# @jwt_required()
 def personajefav_get():
     results = Personaje_favorito.query.all()
     personaje_favorito_list = list(map(lambda item: item.serialize(),results))
@@ -220,12 +272,42 @@ def get_personajefav(id):
 
     return jsonify(response_body), 200
 
+@app.route('/personaje_favorito', methods=['POST'])
+def create_personajefav():
+    body = json.loads(request.data)
+    personajefav = Personaje_favorito(usuario_id=body["usuario_id"], personaje_id=body["personaje_id"])
+    db.session.add(personajefav)
+    db.session.commit()
+    response_body = {
+        "msg": "El Personaje favorito ha sido creado",
+    }
+
+    return jsonify(response_body), 200
 
 
-    # PLANETA FAVORITO
+
+@app.route('/personaje_favorito/<int:id>', methods=['DELETE'])
+def delete_personajefav(id):
+    personaje = Personaje_favorito.query.get(id)
+    if Personaje_favorito is None:
+        raise APIException('Favorito not found', status_code=404)
+    db.session.delete(personaje)
+    db.session.commit()
+    response_body = {
+        "msg": "Personaje favorito eliminado",
+    }
+
+    return jsonify(response_body), 200
+
+
+
+
+#############################################################
+#########################PLANETA FAVORITO#############################
+#############################################################
 
 @app.route('/planeta_favorito', methods=['GET'])
-@jwt_required()
+# @jwt_required()
 def planetafav_get():
     results = Planeta_favorito.query.all()
     planeta_favorito_list = list(map(lambda item: item.serialize(),results))
@@ -248,15 +330,42 @@ def get_planetafav(id):
     return jsonify(response_body), 200
 
 
+@app.route('/planeta_favorito', methods=['POST'])
+def create_planetafav():
+    body = json.loads(request.data)
+    planetafav = Planeta_favorito(usuario_id=body["usuario_id"], planeta_id=body["planeta_id"])
+    db.session.add(planetafav)
+    db.session.commit()
+    response_body = {
+        "msg": "El Planeta favorito ha sido creado",
+    }
+
+    return jsonify(response_body), 200
+
+
+
+@app.route('/planeta_favorito/<int:id>', methods=['DELETE'])
+def delete_planetafav(id):
+    planeta = Planeta_favorito.query.get(id)
+    if Planeta_favorito is None:
+        raise APIException('Favorito not found', status_code=404)
+    db.session.delete(planeta)
+    db.session.commit()
+    response_body = {
+        "msg": "Planeta favorito eliminado",
+    }
+
+    return jsonify(response_body), 200
 
 
 
 
-
-    # VEHICLE FAVORITO
+#############################################################
+#########################VEHICLE FAVORITO#############################
+#############################################################
 
 @app.route('/vehicle_favorito', methods=['GET'])
-@jwt_required()
+# @jwt_required()
 def vehiclefav_get():
     results = Vehicle_favorito.query.all()
     vehicle_favorito_list = list(map(lambda item: item.serialize(),results))
@@ -281,7 +390,43 @@ def get_vehiclefav(id):
 
 
 
-                        # ENDPOINT DE LOGIN
+@app.route('/vehicle_favorito', methods=['POST'])
+def create_vehiclefav():
+    body = json.loads(request.data)
+    vehiclefav = Vehicle_favorito(usuario_id=body["usuario_id"], vehicle_id=body["vehicle_id"])
+    db.session.add(vehiclefav)
+    db.session.commit()
+    response_body = {
+        "msg": "El Vehiculo favorito ha sido creado",
+    }
+
+    return jsonify(response_body), 200
+
+
+
+@app.route('/vehicle_favorito/<int:id>', methods=['DELETE'])
+def delete_vehiclefav(id):
+    vehicle = Vehicle_favorito.query.get(id)
+    if Vehicle_favorito is None:
+        raise APIException('Favorito not found', status_code=404)
+    db.session.delete(vehicle)
+    db.session.commit()
+    response_body = {
+        "msg": "Vehicle favorito eliminado",
+    }
+
+    return jsonify(response_body), 200
+
+
+
+
+
+
+
+ 
+ #############################################################
+#########################LOGIN#############################
+#############################################################
 @app.route("/login", methods=["POST"])
 def login():
     email = request.json.get("email", None)

@@ -16,7 +16,6 @@ class Usuario(db.Model):
             "id": self.id,
             "name": self.name,
             "email": self.email,
-            # do not serialize the password, its a security breach
         }
 
 
@@ -35,7 +34,6 @@ class Personaje(db.Model):
             "name": self.name,
             "eye_color": self.eye_color,
             "hair_color": self.hair_color,
-            # do not serialize the password, its a security breach
         }
     
 class Planeta(db.Model):
@@ -53,7 +51,6 @@ class Planeta(db.Model):
             "name": self.name,
             "population": self.population,
             "terrain": self.terrain,
-            # do not serialize the password, its a security breach
         }
 
 
@@ -72,7 +69,6 @@ class Vehicle(db.Model):
             "name": self.name,
             "crew": self.crew,
             "vehicle_class": self.vehicle_class,
-            # do not serialize the password, its a security breach
         }
 
 
