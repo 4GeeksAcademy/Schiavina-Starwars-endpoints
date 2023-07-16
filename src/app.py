@@ -52,6 +52,7 @@ def sitemap():
 def usuario_get():
     results = Usuario.query.all()
     users_list = list(map(lambda item: item.serialize(),results))
+    
     response_body = {
         "msg": "Hello, this is your GET /usuario response ",
         "results": users_list
@@ -83,7 +84,7 @@ def create_user():
         raise APIException('Te falta añadir un correo electrónico', status_code=400)
     if 'password' not in body:
         raise APIException('Te falta añadir una contraseña', status_code=400)
-      if 'name' not in body:
+    if 'name' not in body:
         raise APIException('Te falta añadir una nombre', status_code=400)
 
     response_body = {
@@ -93,7 +94,7 @@ def create_user():
     return jsonify(response_body), 200
 
 
-@app.route('/user/<int:id>', methods=['DELETE'])
+@app.route('/usuario/<int:id>', methods=['DELETE'])
 def delete_user(id):
     print(id)
 
@@ -121,6 +122,7 @@ def delete_user(id):
 def personaje_get():
     results_personaje = Personaje.query.all()
     personaje_list = list(map(lambda item: item.serialize(),results_personaje))
+    print("OK")
     response_body = {
         "msg": "FUNCIONA PERSONAJES",
         "results": personaje_list
@@ -151,6 +153,23 @@ def create_personaje():
     db.session.commit()
     response_body = {
         "msg": "El Personaje ha sido creado",
+    }
+
+    return jsonify(response_body), 200
+
+@app.route('/personaje/<int:id>', methods=['DELETE'])
+def delete_personaje(id):
+    print(id)
+
+    personaje = Personaje.query.filter_by(id=id).first()
+    if personaje is None:
+        raise APIException("No hay un personaje con ese ID", status_code=404)
+
+    db.session.delete(personaje)
+    db.session.commit()
+
+    response_body = {
+        "msg": "El personaje ha sido borrado",
     }
 
     return jsonify(response_body), 200
@@ -201,6 +220,25 @@ def create_planeta():
 
 
 
+@app.route('/planeta/<int:id>', methods=['DELETE'])
+def delete_planeta(id):
+    print(id)
+
+    planeta = Planeta.query.filter_by(id=id).first()
+    if planeta is None:
+        raise APIException("No hay un planeta con ese ID", status_code=404)
+
+    db.session.delete(planeta)
+    db.session.commit()
+
+    response_body = {
+        "msg": "El planeta ha sido borrado",
+    }
+
+    return jsonify(response_body), 200
+
+
+
 #############################################################
 #########################VEHICLE#############################
 ############################################################# 
@@ -237,6 +275,24 @@ def create_vehicle():
     db.session.commit()
     response_body = {
         "msg": "El Vehiculo ha sido creado",
+    }
+
+    return jsonify(response_body), 200
+
+
+@app.route('/vehicle/<int:id>', methods=['DELETE'])
+def delete_vehicle(id):
+    print(id)
+
+    vehicle = Vehicle.query.filter_by(id=id).first()
+    if vehicle is None:
+        raise APIException("No hay un vehiculo con ese ID", status_code=404)
+
+    db.session.delete(vehicle)
+    db.session.commit()
+
+    response_body = {
+        "msg": "El vehiculo ha sido borrado",
     }
 
     return jsonify(response_body), 200
