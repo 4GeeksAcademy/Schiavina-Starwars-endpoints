@@ -499,6 +499,10 @@ def login():
 
 
 
+
+
+
+
    
 
 # this only runs if `$ python src/app.py` is executed
@@ -508,7 +512,7 @@ if __name__ == '__main__':
 
 
 
-@app.route("/protected", methods=["GET"])
+@app.route("/profile", methods=["GET"])
 @jwt_required()
 def protected():
     # Access the identity of the current user with get_jwt_identity
